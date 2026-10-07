@@ -1,54 +1,380 @@
-<!DOCTYPE html>
+
+      <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Goles de Messi por Posición</title>
-    <!-- Tailwind CSS para diseño moderno -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>La Data Cuenta - Los Goles de Messi por Posición</title>
+    <!-- Importamos tipografías elegantes de Google Fonts para darle el estilo de revista -->
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,700;1,300&family=Playfair+Display:ital,wght@0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        :root {
+            --bg-dark: #0f111a;
+            --panel-bg: #1a1d2e;
+            --brand-green: #00e676;
+            --brand-green-glow: rgba(0, 230, 118, 0.4);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --font-editorial: 'Merriweather', Georgia, serif;
+            --font-sans: 'Plus Jakarta Sans', sans-serif;
+            --font-title: 'Playfair Display', serif;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.8;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* HEADER EDITORIAL AL ESTILO "LA DATA CUENTA" */
+        header {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px 20px;
+            border-bottom: 1px solid #1f2937;
+        }
+
+        .brand {
+            font-size: 1.1em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #fff;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .brand span {
+            color: var(--brand-green);
+            border-bottom: 2px solid var(--brand-green);
+            padding-bottom: 2px;
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            line-height: 1.15;
+            color: #ffffff;
+            margin: 10px 0 20px;
+            font-weight: 700;
+        }
+
+        .sub-meta {
+            font-family: var(--font-sans);
+            font-size: 0.95em;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        /* DISEÑO DE DOS COLUMNAS */
+        .container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px 80px;
+        }
+
+        @media (min-width: 900px) {
+            .container {
+                grid-template-columns: 5.5fr 6.5fr;
+                align-items: start;
+            }
+        }
+
+        /* COLUMNA 1: EL ARTÍCULO */
+        .story-text {
+            font-family: var(--font-editorial);
+            font-size: 1.05rem;
+            color: #e5e7eb;
+        }
+
+        .story-text p {
+            margin-bottom: 24px;
+        }
+
+        .story-text strong {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .position-highlight {
+            border-left: 3px solid var(--brand-green);
+            padding-left: 20px;
+            margin: 35px 0;
+        }
+
+        .position-highlight h3 {
+            font-family: var(--font-sans);
+            font-size: 1.4rem;
+            margin: 0 0 10px;
+            color: var(--brand-green);
+        }
+
+        /* COLUMNA 2: LA CANCHA INTERACTIVA */
+        .visual-column {
+            position: sticky;
+            top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Dibujo 2.5D de la Cancha */
+        .pitch-card {
+            background-color: #1e4620; /* Color pasto oscuro */
+            border-radius: 16px;
+            aspect-ratio: 1.5 / 1;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            perspective: 600px; /* Para simular 3D */
+        }
+
+        /* Render de la cancha usando puro CSS */
+        .pitch-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 4px solid rgba(255, 255, 255, 0.35);
+            box-sizing: border-box;
+            transform: rotateX(25deg); /* Efecto Perspectiva */
+            transform-origin: bottom;
+            background: linear-gradient(to bottom, #144011, #256b1e);
+        }
+
+        .center-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background-color: rgba(255,255,255,0.35);
+        }
+
+        .center-circle {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 25%;
+            aspect-ratio: 1 / 1;
+            border: 3px solid rgba(255,255,255,0.35);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .box-left {
+            position: absolute;
+            left: 0;
+            top: 20%;
+            height: 60%;
+            width: 15%;
+            border: 3px solid rgba(255,255,255,0.35);
+            border-left: none;
+        }
+
+        /* Marcadores de Posición en 3D */
+        .pos-marker {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .marker-glow {
+            width: 35px;
+            height: 35px;
+            background-color: rgba(0, 230, 118, 0.9);
+            border: 3px solid #fff;
+            border-radius: 50%;
+            margin: 0 auto 5px;
+            box-shadow: 0 0 15px var(--brand-green-glow);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-sans);
+            font-weight: 700;
+            font-size: 11px;
+            color: #000;
+        }
+
+        .pos-marker:hover .marker-glow, .pos-marker.active .marker-glow {
+            transform: scale(1.3);
+            background-color: #ffffff;
+            border-color: var(--brand-green);
+            box-shadow: 0 0 25px var(--brand-green);
+        }
+
+        .pos-label {
+            font-family: var(--font-sans);
+            font-size: 11px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 1px 1px 4px #000;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* UBICACIONES ESTIMADAS (Ataca a la izquierda en perspectiva) */
+        #falso9 { top: 50%; left: 30%; }
+        #ext-der { top: 25%; left: 38%; }
+        #ext-izq { top: 75%; left: 38%; }
+        #mediapunta { top: 50%; left: 52%; }
+        #enganche { top: 50%; left: 70%; }
+
+        /* TARJETA DE INFORMACIÓN DINÁMICA (Para dar "vida" a los clics) */
+        .data-card {
+            background-color: var(--panel-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+            min-height: 120px;
+        }
+
+        .data-card h2 {
+            font-family: var(--font-sans);
+            font-size: 1.4em;
+            margin: 0 0 4px 0;
+            color: #fff;
+        }
+
+        .data-card .stat {
+            font-size: 2.2em;
+            font-weight: 700;
+            color: var(--brand-green);
+            font-family: var(--font-sans);
+            margin-bottom: 12px;
+        }
+
+        .data-card p {
+            color: var(--text-muted);
+            margin: 0;
+            font-size: 0.95em;
+        }
+
+        .call-action {
+            font-size: 0.8em;
+            color: var(--brand-green);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Animación para guiar al usuario */
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.15); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 0.5; }
+        }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen py-8 px-4 flex items-center justify-center">
-    <div class="max-w-4xl w-full bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
-        <!-- Encabezado -->
-        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 px-8 py-6 text-white">
-            <span class="text-xs font-semibold tracking-wider uppercase bg-white/20 px-3 py-1 rounded-full">Análisis Interactivo</span>
-            <h1 class="text-3xl font-bold mt-2">Goles de Lionel Messi por Posición</h1>
-            <p class="text-blue-100 mt-1 text-sm">Visualiza el impacto goleador histórico según su rol táctico en la cancha.</p>
+<body>
+
+    <header>
+        <div class="brand">LA <span>DATA</span> CUENTA</div>
+        <h1>El Rey en sus dominios: Radiografía de los goles de Messi según su posición</h1>
+        <div class="sub-meta">Por Redacción La Data Cuenta • Actualizado en Directo</div>
+    </header>
+
+    <div class="container">
+        <!-- SECCIÓN 1: EL TEXTO NARRATIVO -->
+        <div class="story-text">
+            <p>Hablar de Lionel Messi es hablar de una evolución futbolística constante. A lo largo de casi dos décadas, el astro argentino no solo ha roto todos los récords posibles, sino que ha reinventado su forma de jugar adaptándose a las necesidades de su equipo y a su propia madurez física.</p>
+
+            <p>Pero, ¿cómo se traduce esa metamorfosis táctica en números fríos y duros? Para entenderlo, exploramos un histórico de sus anotaciones, categorizándolas por la posición exacta que ocupaba en el campo durante cada etapa de su carrera. Los datos confirman lo que nuestros ojos veían: la posición de Messi dictaba el ritmo y la letalidad de su equipo.</p>
+
+            <div class="position-highlight">
+                <h3>El Falso 9: La máquina perfecta</h3>
+                <p>Bajo el mando de Pep Guardiola, su posicionamiento como "falso 9" coincidió con sus años más explosivos y prolíficos (incluyendo el inalcanzable récord de 2012). En esta zona, Messi maximizó su frecuencia goleadora al estar más cerca del área y ser el finalizador absoluto del juego.</p>
+            </div>
+
+            <div class="position-highlight">
+                <h3>El Extremo Derecho: La diagonal clásica</h3>
+                <p>Es la posición en la que se dio a conocer mundialmente. Partir desde la banda derecha para trazar diagonales hacia el centro con el balón pegado a su pierna izquierda es, sin duda, su jugada más representativa, resultando en un volumen masivo de goles.</p>
+            </div>
+
+            <div class="position-highlight">
+                <h3>El Mediapunta y Enganche: El Arquitecto</h3>
+                <p>En etapas de mayor madurez, Messi retrasó su posición para actuar más como creador de juego. Aunque mantiene una capacidad goleadora sobresaliente, en estos roles su perfil se vuelca más hacia la asistencia y la distribución.</p>
+            </div>
         </div>
 
-        <!-- Tarjetas de Métricas Rápidas -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 p-8 border-b border-slate-100 bg-slate-50/50">
-            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-                <p class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Total Goles Analizados</p>
-                <p class="text-2xl font-bold text-slate-800 mt-1">704</p>
+        <!-- SECCIÓN 2: LA CANCHA INTERACTIVA -->
+        <div class="visual-column">
+            <div class="call-action">
+                👈 Toca o haz clic sobre una posición en la cancha para interactuar
             </div>
-            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-                <p class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Posición Más Letal</p>
-                <p class="text-2xl font-bold text-indigo-600 mt-1">Falso 9</p>
-            </div>
-            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-                <p class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Récord en Posición</p>
-                <p class="text-2xl font-bold text-slate-800 mt-1">316 Goles</p>
-            </div>
-        </div>
 
-        <!-- Contenedor del Gráfico -->
-        <div class="p-6 md:p-8">
-            <div class="relative w-full overflow-hidden bg-white rounded-2xl">
-                <div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
-        <script charset="utf-8" src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>                <div id="f8861544-e639-4c5e-872e-9082f213e8e8" class="plotly-graph-div" style="height:100%; width:100%;"></div>            <script type="text/javascript">                                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("f8861544-e639-4c5e-872e-9082f213e8e8")) {                    Plotly.newPlot(                        "f8861544-e639-4c5e-872e-9082f213e8e8",                        [{"alignmentgroup":"True","customdata":[["Falso 9",316,44.9],["Extremo Derecho",316,44.9],["Mediapunta",55,7.8],["Enganche",16,2.3],["Extremo Izquierdo",1,0.1]],"hovertemplate":"\u003cb\u003e%{customdata[0]}\u003c\u002fb\u003e\u003cbr\u003e\u003cbr\u003eGoles: %{y}\u003cbr\u003ePorcentaje: %{customdata[2]}%\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"","marker":{"color":[316,316,55,16,1],"coloraxis":"coloraxis","pattern":{"shape":""}},"name":"","offsetgroup":"","orientation":"v","showlegend":false,"text":[316.0,316.0,55.0,16.0,1.0],"textposition":"outside","x":["Falso 9","Extremo Derecho","Mediapunta","Enganche","Extremo Izquierdo"],"xaxis":"x","y":[316,316,55,16,1],"yaxis":"y","type":"bar","textfont":{"color":"#1e293b","size":12}}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmapgl":[{"type":"heatmapgl","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"title":{}},"yaxis":{"anchor":"x","domain":[0.0,1.0],"title":{},"showgrid":true,"gridcolor":"#e2e8f0","gridwidth":0.5},"coloraxis":{"colorbar":{"title":{"text":"Goles"}},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"showscale":false},"legend":{"tracegroupgap":0},"margin":{"t":20,"l":20,"r":20,"b":20},"barmode":"relative","font":{"family":"Inter, sans-serif","size":13,"color":"#334155"},"plot_bgcolor":"rgba(0,0,0,0)","paper_bgcolor":"rgba(0,0,0,0)"},                        {"responsive": true}                    )                };                            </script>        </div>
-            </div>
-        </div>
+            <div class="pitch-card">
+                <div class="pitch-bg">
+                    <div class="center-line"></div>
+                    <div class="center-circle"></div>
+                    <div class="box-left"></div>
+                </div>
 
-        <!-- Pie de página informativo -->
-        <div class="bg-slate-50 px-8 py-4 text-xs text-slate-400 flex justify-between items-center">
-            <span>Datos actualizados</span>
-            <span class="font-semibold text-slate-500">Interactúa pasando el cursor o tocando las barras</span>
+                <!-- Puntos Calientes (Marcadores) -->
+                <div class="pos-marker" id="falso9" onclick="showPosition('FALSO 9', 316, 'En la era dorada de Pep Guardiola, Messi jugó libre por el centro. Al no tener la marca fija de los centrales, maximizaba la frecuencia goleadora de cara al arco.')">
+                    <div class="marker-glow">F9</div>
+                    <div class="pos-label">Falso 9</div>
+                </div>
+
+                <div class="pos-marker" id="ext-der" onclick="showPosition('EXTREMO DERECHO', 316, 'Su posición mítica. La histórica diagonal de afuera hacia adentro para colgarla en el poste lejano del arquero le otorgó la mitad de su dinastía goleadora.')">
+                    <div class="marker-glow">ED</div>
+                    <div class="pos-label">Ext. Derecho</div>
+                </div>
+
+                <div class="pos-marker" id="mediapunta" onclick="showPosition('MEDIAPUNTA', 55, 'Ubicado por detrás del centro delantero, en una etapa de madurez. Menos presencia dentro del área pero un rol brutalmente enfocado en la distribución de juego.')">
+                    <div class="marker-glow">MP</div>
+                    <div class="pos-label">Mediapunta</div>
+                </div>
+
+                <div class="pos-marker" id="enganche" onclick="showPosition('ENGANCHE', 16, 'El mariscal del mediocampo. Menos explosivo en carreras, pero el cerebro de todos los ataques conectando los mediocampistas con la ofensiva.')">
+                    <div class="marker-glow">ENG</div>
+                    <div class="pos-label">Enganche</div>
+                </div>
+
+                <div class="pos-marker" id="ext-izq" onclick="showPosition('EXTREMO IZQUIERDO', 1, 'Una rareza absoluta en sus estadísticas. Al ser zurdo natural, rara vez fue confinado a la banda izquierda, donde su perfil quedaría limitado.')">
+                    <div class="marker-glow">EI</div>
+                    <div class="pos-label">Ext. Izquierdo</div>
+                </div>
+            </div>
+
+            <!-- Ficha Dinámica del Análisis de Datos -->
+            <div class="data-card" id="display-card">
+                <h2>Cargando análisis...</h2>
+                <div class="stat">Selecciona un marcador</div>
+                <p>Haz clic en cualquiera de las posiciones en la cancha 3D para revelar las cifras y el impacto histórico de Messi en esa zona de juego.</p>
+            </div>
         </div>
     </div>
+
+    <script>
+        function showPosition(nombre, goles, descripcion) {
+            // Actualizamos los textos de la tarjeta
+            document.getElementById('display-card').innerHTML = `
+                <h2>${nombre}</h2>
+                <div class="stat">${goles} GOLES</div>
+                <p>${descripcion}</p>
+            `;
+
+            // Quitamos la clase 'active' de todos los marcadores y se la ponemos al seleccionado
+            const markers = document.querySelectorAll('.pos-marker');
+            markers.forEach(m => m.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+    </script>
 </body>
 </html>
