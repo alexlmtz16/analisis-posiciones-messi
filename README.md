@@ -7,12 +7,7 @@ Hablar de Lionel Messi es hablar de una evolución futbolística constante. A lo
 Para entender cómo esta metamorfosis táctica impactó sus registros goleadores, extraje y analicé una base de datos con el histórico de sus anotaciones, categorizándolas por la posición exacta que ocupaba en el campo.
 
 ---
-
-## 📊 Visualización de Datos
-
-![Gráfica de Goles de Messi](grafica.png)
-
-*(Gráfica generada a partir de los datos históricos de rendimiento)*
+HAZ CLIC AQUÍ PARA VER LA GRÁFICA INTERACTIVA EN PANTALLA COMPLETA (https://alexlmtz16.github.io/Goles_Messi/index.html)
 
 ---
 
